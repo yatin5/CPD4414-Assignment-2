@@ -19,6 +19,8 @@ package cpd4414.assign2;
 import cpd4414.assign2.OrderQueue;
 import cpd4414.assign2.Purchase;
 import cpd4414.assign2.Order;
+import cpd4414.assign2.OrderQueue.NoCustomerException;
+import cpd4414.assign2.OrderQueue.NoPurchasesException;
 import java.util.Date;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -94,19 +96,20 @@ public class OrderQueueTest {
         }
         assertTrue(itDidThrowException);
     }
-    @Test
-    public void testGetNextWhenOrdersInSystemThenGetNextAvailable() throws OrderQueue.NoCustomerException, OrderQueue.NoPurchasesException {
+     @Test
+    public void testGetNextWhenOrdersInSystemThenGetNextAvailable() throws OrderQueue.NoCustomerException, OrderQueue.NoPurchasesException, Exception {
         OrderQueue orderQueue = new OrderQueue();
         Order order = new Order("SomeValues", "OtherValues");
-        order.addPurchase(new Purchase(1, 8));
+        order.addPurchase(new Purchase("someid", 8));
         orderQueue.add(order);
         Order order2 = new Order("SomeValues", "OtherValues");
-        order2.addPurchase(new Purchase(2, 4));
+        order2.addPurchase(new Purchase("someid", 4));
         orderQueue.add(order2);
 
         Order result = orderQueue.next();
         assertEquals(result, order);
         assertNull(result.getTimeProcessed());
     }
+
      
 }
