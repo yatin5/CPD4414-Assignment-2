@@ -34,26 +34,26 @@ import org.junit.Test;
  * @author Len Payne <len.payne@lambtoncollege.ca>
  */
 public class OrderQueueTest {
-    
+
     public OrderQueueTest() {
     }
-    
+
     @BeforeClass
     public static void setUpClass() {
     }
-    
+
     @AfterClass
     public static void tearDownClass() {
     }
-    
+
     @Before
     public void setUp() {
     }
-    
+
     @After
     public void tearDown() {
     }
-    
+
     @Test
     public void testWhenCustomerExistsAndPurchasesExistThenTimeReceivedIsNow() throws Exception {
         OrderQueue orderQueue = new OrderQueue();
@@ -61,14 +61,14 @@ public class OrderQueueTest {
         order.addPurchase(new Purchase(1, 450));
         order.addPurchase(new Purchase(2, 250));
         orderQueue.add(order);
-        
+
         long expResult = new Date().getTime();
         long result = order.getTimeReceived().getTime();
         assertTrue(Math.abs(result - expResult) < 1000);
     }
 
     @Test
-    public void testWhenNoCustomerExistThenThrowAnException() throws Exception {
+    public void testWhenNoCustomerExistThenThrowAnException() throws OrderQueue.NoCustomerException, Exception {
         boolean itDidThrowException = false;
         OrderQueue orderQueue = new OrderQueue();
         Order order = new Order(null, null);
@@ -76,27 +76,29 @@ public class OrderQueueTest {
         order.addPurchase(new Purchase(2, 250));
         try {
             orderQueue.add(order);
-        } catch (OrderQueue.NoCustomerException cust) {
-            
+        } catch (OrderQueue.NoCustomerException ex) {
+
             itDidThrowException = true;
         }
         assertTrue(itDidThrowException);
     }
+
     @Test
     public void testWhenNopurchasesThenThrowAnException() throws Exception {
-    
+
         boolean itDidThrowException = false;
         OrderQueue orderQueue = new OrderQueue();
         Order order = new Order("someNormal", null);
         try {
             orderQueue.add(order);
         } catch (OrderQueue.NoPurchasesException cust) {
-            
+
             itDidThrowException = true;
         }
         assertTrue(itDidThrowException);
     }
-     @Test
+
+    @Test
     public void testGetNextWhenOrdersInSystemThenGetNextAvailable() throws OrderQueue.NoCustomerException, OrderQueue.NoPurchasesException, Exception {
         OrderQueue orderQueue = new OrderQueue();
         Order order = new Order("SomeValues", "OtherValues");
@@ -118,7 +120,7 @@ public class OrderQueueTest {
         Order result = orderQueue.next();
         assertNull(result);
     }
-    
+
     @Test
     public void testProcessWhenTimeReceivedIsSetThenSetTimeProcessedToNow() throws OrderQueue.NoCustomerException, OrderQueue.NoPurchasesException, OrderQueue.NoTimeReceivedException, Exception {
         OrderQueue orderQueue = new OrderQueue();
@@ -136,7 +138,8 @@ public class OrderQueueTest {
         long result = next.getTimeProcessed().getTime();
         assertTrue(Math.abs(result - expResult) < 1000);
     }
-     @Test
+
+    @Test
     public void testProcessWhenTimeReceivedNotSetThenThrowException() {
         boolean didThrow = false;
         OrderQueue orderQueue = new OrderQueue();
@@ -151,5 +154,24 @@ public class OrderQueueTest {
 
         assertTrue(didThrow);
     }
-     
+
+    @Test
+    public void testFulfillWhenTimeReceivedIsSetAndTimeProcessedIsSetAndItemsInStockThenSetTimeFulfilledToNow() throws OrderQueue.NoCustomerException, OrderQueue.NoPurchasesException, OrderQueue.NoTimeReceivedException, OrderQueue.NoTimeProcessedException, Exception {
+        OrderQueue orderQueue = new OrderQueue();
+        Order order = new Order("SomeValues", "OtherValues");
+        order.addPurchase(new Purchase(1, 8));
+        orderQueue.add(order);
+        Order order2 = new Order("SomeValues", "OtherValues");
+        order2.addPurchase(new Purchase(2, 4));
+        orderQueue.add(order2);
+
+        Order next = orderQueue.next();
+        orderQueue.process(next);
+
+        orderQueue.fulfill(next);
+
+        long expResult = new Date().getTime();
+        long result = next.getTimeFulfilled().getTime();
+        assertTrue(Math.abs(result - expResult) < 1000);
+    }
 }
