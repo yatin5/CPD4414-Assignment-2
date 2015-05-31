@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package cpd4414.assign2;
 
 import cpd4414.assign2.OrderQueue;
@@ -52,9 +51,9 @@ public class OrderQueueTest {
     @After
     public void tearDown() {
     }
-
+    
     @Test
-    public void testWhenCustomerExistsAndPurchasesExistThenTimeReceivedIsNow() {
+    public void testWhenCustomerExistsAndPurchasesExistThenTimeReceivedIsNow() throws Exception {
         OrderQueue orderQueue = new OrderQueue();
         Order order = new Order("CUST00001", "ABC Cafeteria");
         order.addPurchase(new Purchase("PROD0004", 450));
@@ -65,5 +64,20 @@ public class OrderQueueTest {
         long result = order.getTimeReceived().getTime();
         assertTrue(Math.abs(result - expResult) < 1000);
     }
-    
+
+    @Test
+    public void testWhenNoCustomerExistThenThrowsException() {
+        boolean itDidThrowException = false;
+        OrderQueue orderQueue = new OrderQueue();
+        Order order = new Order(null, null);
+        order.addPurchase(new Purchase("PROD0004", 450));
+        order.addPurchase(new Purchase("PROD0006", 250));
+        try {
+            orderQueue.add(order);
+        } catch (Exception cust) {
+            
+            itDidThrowException = true;
+        }
+        assertTrue(itDidThrowException);
+    }
 }
