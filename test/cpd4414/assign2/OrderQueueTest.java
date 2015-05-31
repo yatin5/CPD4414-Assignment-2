@@ -76,7 +76,7 @@ public class OrderQueueTest {
         order.addPurchase(new Purchase(2, 250));
         try {
             orderQueue.add(order);
-        } catch (OrderQueue.NoCustomerException ex) {
+        } catch (OrderQueue.NoCustomerException cust) {
 
             itDidThrowException = true;
         }
